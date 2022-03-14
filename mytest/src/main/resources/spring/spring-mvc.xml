@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/mvc
+   https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 配置SpringMVC -->
+    <!-- 1.开启SpringMVC注解驱动 -->
+    <mvc:annotation-driven />
+    <!-- 4.扫描web相关的bean -->
+    <context:component-scan base-package="asset.controller" />
+    <!-- 2.静态资源默认servlet配置-->
+<!--    <mvc:default-servlet-handler/>-->
+
+    <mvc:resources mapping="/js/*.js" location="/WEB-INF/statics/js/" />
+    <mvc:resources mapping="/*.html" location="/WEB-INF/statics/html/" />
+    <mvc:resources mapping="/css/*.css" location="/WEB-INF/statics/css/" />
+    <mvc:resources mapping="/img/**" location="/WEB-INF/statics/img/" />
+    <mvc:resources mapping="/**.**" location="/WEB-INF/statics/"/>
+    <mvc:resources mapping="/**" location="/WEB-INF/statics/"/>
+
+    <!-- 3.配置jsp 显示ViewResolver视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/" />
+        <property name="suffix" value=".html" />
+    </bean>
+
+    <!-- 文件上传 start 配置文件上传，如果没有使用文件上传可以不用配置，当然如果不配，那么配置文件中也不必引入上传组件包 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 默认编码 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!-- 文件大小最大值 上传文件大小限制为10M，10*1024*1024 -->
+        <property name="maxUploadSize" value="10485760"/>
+        <!-- 内存中的最大值 -->
+        <property name="maxInMemorySize" value="4096"/>
+    </bean>
+
+
+
+</beans>

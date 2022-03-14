@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.asset.mapper.AssetWarehouseMapper">
+    
+    <resultMap type="AssetWarehouse" id="AssetWarehouseResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="address"    column="address"    />
+        <result property="masterUserId"    column="master_user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="links"    column="links"    />
+        <result property="status"    column="status"    />
+        <result property="comment"    column="comment"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectAssetWarehouseVo">
+        select t.*, u.nick_name user_name
+        from asset_warehouse t
+        join sys_user u on u.user_id = t.master_user_id
+    </sql>
+
+    <select id="selectAssetWarehouseList" parameterType="AssetWarehouse" resultMap="AssetWarehouseResult">
+        <include refid="selectAssetWarehouseVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and t.title like concat('%', #{title}, '%')</if>
+            <if test="masterUserId != null "> and master_user_id = #{masterUserId}</if>
+            <if test="links != null  and links != ''"> and links = #{links}</if>
+            <if test="status != null  and status != ''"> and t.status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectAssetWarehouseById" parameterType="Long" resultMap="AssetWarehouseResult">
+        <include refid="selectAssetWarehouseVo"/>
+        where t.id = #{id}
+    </select>
+    
+    <select id="selectAssetWarehouseByTitle" parameterType="String" resultMap="AssetWarehouseResult">
+        <include refid="selectAssetWarehouseVo"/>
+        where t.title = #{title}
+        limit 1
+    </select>
+        
+    <insert id="insertAssetWarehouse" parameterType="AssetWarehouse" useGeneratedKeys="true" keyProperty="id">
+        insert into asset_warehouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="masterUserId != null">master_user_id,</if>
+            <if test="links != null and links != ''">links,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="comment != null">comment,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="masterUserId != null">#{masterUserId},</if>
+            <if test="links != null and links != ''">#{links},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="comment != null">#{comment},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAssetWarehouse" parameterType="AssetWarehouse">
+        update asset_warehouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="masterUserId != null">master_user_id = #{masterUserId},</if>
+            <if test="links != null and links != ''">links = #{links},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="comment != null">comment = #{comment},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAssetWarehouseById" parameterType="Long">
+        delete from asset_warehouse where id = #{id}
+    </delete>
+
+    <delete id="deleteAssetWarehouseByIds" parameterType="String">
+        delete from asset_warehouse where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.xdata.mapper.XdataLogMapper">
+    
+    <resultMap type="XdataLog" id="XdataLogResult">
+        <result property="id"    column="id"    />
+        <result property="pipeId"    column="pipe_id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="result"    column="result"    />
+        <result property="rows"    column="rows"    />
+        <result property="error"    column="error"    />
+		<association property="pipe" javaType="XdataPipe">
+			<id property="id" column="pipe_id"/>
+			<result property="title" column="pipe_title"/>
+		</association>
+		<association property="client" javaType="XdataClient">
+			<id property="id" column="client_id"/>
+			<result property="title" column="client_title"/>
+		</association>
+		<association property="model" javaType="XdataModel">
+			<id property="id" column="model_id"/>
+			<result property="title" column="model_title"/>
+		</association>
+    </resultMap>
+
+    <sql id="selectXdataLogVo">
+        select id, pipe_id, start_time, end_time, result, rows, error from xdata_log t
+    </sql>
+
+    <select id="selectXdataLogList" parameterType="XdataLog" resultMap="XdataLogResult">        
+        select t.*, m.title model_title, c.title client_title, p.client_id,p.model_id, p.title pipe_title from xdata_log t
+        join xdata_pipe p on p.id = t.pipe_id
+        join xdata_client c on c.id=p.client_id
+        join xdata_model m on m.id=p.model_id
+        <where>  
+            <if test="pipeId != null "> and t.pipe_id = #{pipeId}</if>
+            <if test="startTime != null "> and t.start_time = #{startTime}</if>
+            <if test="endTime != null "> and t.end_time = #{endTime}</if>
+            <if test="result != null  and result != ''"> and t.result = #{result}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(t.start_time,'%y%m%d%H%i%S') &gt;= date_format(#{params.beginTime},'%y%m%d%H%i%S')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(t.end_time,'%y%m%d%H%i%S') &lt;= date_format(#{params.endTime},'%y%m%d%H%i%S')
+            </if>
+        </where>            
+        <if test="params.dataScope != null ">${params.dataScope}</if>
+    </select>
+    
+    <select id="selectXdataLogById" parameterType="Long" resultMap="XdataLogResult">
+        <include refid="selectXdataLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertXdataLog" parameterType="XdataLog">
+        insert into xdata_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="pipeId != null">pipe_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="result != null and result != ''">result,</if>
+            <if test="rows != null">rows,</if>
+            <if test="error != null">error,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="pipeId != null">#{pipeId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="result != null and result != ''">#{result},</if>
+            <if test="rows != null">#{rows},</if>
+            <if test="error != null">#{error},</if>
+         </trim>
+    </insert>
+
+    <update id="updateXdataLog" parameterType="XdataLog">
+        update xdata_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pipeId != null">pipe_id = #{pipeId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="result != null and result != ''">result = #{result},</if>
+            <if test="rows != null">rows = #{rows},</if>
+            <if test="error != null">error = #{error},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteXdataLogById" parameterType="Long">
+        delete from xdata_log where id = #{id}
+    </delete>
+
+    <delete id="deleteXdataLogByIds" parameterType="String">
+        delete from xdata_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

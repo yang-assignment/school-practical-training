@@ -1,0 +1,7 @@
+yndxSSM——三种数据库处理方法、
+yndxSSM-2——简单工厂模式实现
+YNDXspringmvc——Controller+Tomcat
+YNDXspringmvc-2——Mybatis（regist自定义返回结果集合好像还是有点问题）
+SSM——集大成者（Mybatis和上略有不同）
+
+之后老师就啥也没讲了，提到springboot但也没说项目怎么做

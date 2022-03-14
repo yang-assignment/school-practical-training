@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.asset.mapper.AssetItMapper">
+    
+    <resultMap type="AssetIt" id="AssetItResult">
+        <result property="assetId"    column="asset_id"    />
+        <result property="isOnline"    column="is_online"    />
+        <result property="ip"    column="ip"    />
+        <result property="mac"    column="mac"    />
+        <result property="gateway"    column="gateway"    />
+        <result property="lastTime"    column="last_time"    />
+        <association property="asset"    column="asset_id" javaType="AssetInfo" resultMap="assetInfoResult" />
+        <association property="user"  javaType="SysUser" resultMap="userResult" />
+    </resultMap>
+    <resultMap type="AssetInfo" id="assetInfoResult">
+        <result property="id"    column="asset_id"    />
+        <result property="num"    column="asset_num"    />
+        <result property="name"    column="asset_name"    />
+        <result property="param"    column="param"    />
+        <result property="factory"    column="factory"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+    <resultMap type="SysUser" id="userResult">
+        <result property="userId"    column="use_user_id"    />
+        <result property="nickName"    column="nick_name"    />
+    </resultMap>
+
+    <sql id="selectAssetItVo">
+        select t.*, i.name asset_name, i.num asset_num,i.param, i.factory, i.status, u.nick_name,i.use_user_id
+        from asset_it t
+        join asset_info i on t.asset_id = i.id
+        left join sys_user u on u.user_id = i.use_user_id
+    </sql>
+
+    <select id="selectAssetItList" parameterType="AssetIt" resultMap="AssetItResult">
+        <include refid="selectAssetItVo"/>
+        <where>  
+            <if test="isOnline != null  and isOnline != ''"> and t.is_online = #{isOnline}</if>
+            <if test="searchValue != null  and searchValue != ''"> and (ip like concat('%', #{searchValue}, '%') OR mac like concat('%', #{searchValue}, '%') OR gateway like concat('%', #{searchValue}, '%'))</if>
+            
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(t.last_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(t.last_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectAssetItById" parameterType="Long" resultMap="AssetItResult">
+        <include refid="selectAssetItVo"/>
+        where t.asset_id = #{assetId}
+    </select>
+        
+    <insert id="insertAssetIt" parameterType="AssetIt">
+        insert into asset_it
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assetId != null">asset_id,</if>
+            <if test="isOnline != null">is_online,</if>
+            <if test="ip != null">ip,</if>
+            <if test="mac != null">mac,</if>
+            <if test="gateway != null and gateway != ''">gateway,</if>
+            <if test="lastTime != null">last_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assetId != null">#{assetId},</if>
+            <if test="isOnline != null">#{isOnline},</if>
+            <if test="ip != null">#{ip},</if>
+            <if test="mac != null">#{mac},</if>
+            <if test="gateway != null and gateway != ''">#{gateway},</if>
+            <if test="lastTime != null">#{lastTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAssetIt" parameterType="AssetIt">
+        update asset_it
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="isOnline != null">is_online = #{isOnline},</if>
+            <if test="ip != null">ip = #{ip},</if>
+            <if test="mac != null">mac = #{mac},</if>
+            <if test="gateway != null and gateway != ''">gateway = #{gateway},</if>
+            <if test="lastTime != null">last_time = #{lastTime},</if>
+        </trim>
+        where asset_id = #{assetId}
+    </update>
+
+    <delete id="deleteAssetItById" parameterType="Long">
+        delete from asset_it where asset_id = #{assetId}
+    </delete>
+
+    <delete id="deleteAssetItByIds" parameterType="String">
+        delete from asset_it where asset_id in 
+        <foreach item="assetId" collection="array" open="(" separator="," close=")">
+            #{assetId}
+        </foreach>
+    </delete>
+</mapper>

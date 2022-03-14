@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: asset
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: asset
+    password: password
+    url: jdbc:mysql://localhost:3306/asset?useUnicode=true&character_set_server=utf8mb4&useSSL=false
+  aop:
+    auto: true
+    proxy-target-class: true
+  jpa:
+    open-in-view: false
+
+app:
+  token:
+    jwt-key: 0mxiejUhndfHgg17oxmawer90dmdnfd73
+    expire-minute: 2880
+
+logging:
+  file: asset.log
+
+server:
+  port: 8081
