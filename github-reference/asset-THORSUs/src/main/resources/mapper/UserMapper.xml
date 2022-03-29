@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="asset.mapper.UserMapper">
+
+	<resultMap id="UserInfoResult" type="asset.pojo.Teacher" >
+	    <id column="id" property="id"/>
+		<result property="name" column="name"/>
+		<result property="password" column="password"/>
+		<result property="unitId" column="unitId"/>
+	</resultMap>
+	<!--老师登录-->
+    <select id="teacherLogin" parameterType="asset.pojo.Teacher" resultMap="UserInfoResult">
+        SELECT * FROM `Teacher` WHERE name=#{name}
+    </select>
+	<!--判断数据库有没有此用户-->
+	<select id="checkUserName" parameterType="asset.pojo.Teacher" resultMap="UserInfoResult">
+		SELECT * FROM `Teacher` WHERE name=#{name}
+	</select>
+	<!--老师注册-->
+	<insert id="signUp" parameterType="asset.pojo.Teacher" >
+		INSERT INTO `Teacher` (name,password,unitId) VALUES (#{name},#{password},#{unitId})
+	</insert>
+	<!--业务管理员登录-->
+	<select id="senManagerLogin" parameterType="asset.pojo.SenManager" resultType="asset.pojo.SenManager">
+		SELECT * FROM `SenManager` WHERE name=#{name}
+	</select>
+	<!--添加业务管理员-->
+	<insert id="addSenManager" parameterType="asset.pojo.SenManager">
+		INSERT INTO `SenManager` (name,password,status) VALUES (#{name},#{password},#{status})
+	</insert>
+	<update id="updateManager" parameterType="asset.pojo.SenManager">
+		UPDATE `SenManager` SET status=#{status}
+		WHERE name=#{name}
+	</update>
+	<!--删除业务管理员-->
+	<update id="delSenManager" parameterType="asset.pojo.SenManager">
+		UPDATE `SenManager` SET status=#{status}
+		WHERE name=#{name}
+	</update>
+	<!--超级管理员登录-->
+	<select id="superManagerLogin" parameterType="asset.pojo.PriManager" resultType="asset.pojo.PriManager">
+		SELECT * FROM `PriManager` WHERE name=#{name}
+	</select>
+	<!--获取老师单位id-->
+	<select id="getUnitId" parameterType="String" resultType="String">
+		SELECT unitId FROM Teacher WHERE name=#{username}
+	</select>
+	<!--查询业务管理员-->
+	<select id="getManagerList" resultType="asset.pojo.SenManager">
+		select * from `SenManager` where status=0
+	</select>
+</mapper> 
